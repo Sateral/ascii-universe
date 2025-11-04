@@ -1,16 +1,25 @@
 import os
+import sys
 import shutil
 
+from engine.camera import Camera
 from engine.universe import Universe
 
 
 class Renderer:
     """Renders the universe to the terminal in ASCII"""
 
-    def __init__(self, width: int | None = None, height: int | None = None):
+    def __init__(
+        self,
+        width: int | None = None,
+        height: int | None = None,
+        *,
+        camera: Camera | None = None,
+    ) -> None:
         terminal_size = shutil.get_terminal_size((80, 40))
         self.width = width or terminal_size.columns
         self.height = height or terminal_size.lines - 2
+        self.camera = camera or Camera()
 
     def clear(self) -> None:
         os.system("cls" if os.name == "nt" else "clear")
@@ -20,12 +29,20 @@ class Renderer:
 
         # Create empty canvas
         canvas = [[" " for _ in range(self.width)] for _ in range(self.height)]
-        cx, cy = self.width // 2, self.height // 2
+        half_w = self.width / 2
+        half_h = self.height / 2
+
+        def to_screen(wx, wy):
+            cam_x, cam_y = self.camera.center
+            zoom = self.camera.zoom
+            sx = int((wx - cam_x) * zoom + half_w)
+            sy = int((wy - cam_y) * zoom + half_h)
+            return sx, sy
 
         # Draw galaxies
         for galaxy in universe.galaxies:
             # Center of galaxy
-            gx, gy = int(cx + galaxy.pos[0]), int(cy + galaxy.pos[1])
+            gx, gy = to_screen(galaxy.pos[0], galaxy.pos[1])
 
             # If galaxy is in view
             if 0 <= gx < self.width and 0 <= gy < self.height:
@@ -34,7 +51,7 @@ class Renderer:
             # Draw systems
             for system in galaxy.systems:
                 # Center of system  
-                sx, sy = int(gx + system.center.pos[0]), int(gy + system.center.pos[1])
+                sx, sy = to_screen(system.center.pos[0], system.center.pos[1])
 
                 # If system is in view
                 if 0 <= sx < self.width and 0 <= sy < self.height:
@@ -42,15 +59,14 @@ class Renderer:
                 
                 # Draw bodies
                 for body in system.bodies:
-                    offset_x = body.pos[0] - system.center.pos[0]
-                    offset_y = body.pos[1] - system.center.pos[1]
-                    bx, by = int(sx + offset_x), int(sy + offset_y)
+                    bx, by = to_screen(body.pos[0], body.pos[1])
 
                     # If body is in view
                     if 0 <= bx < self.width and 0 <= by < self.height:
                         canvas[by][bx] = body.symbol
         
         # Render to screen
-        self.clear()
+        sys.stdout.write("\033[H")       # move cursor home without clearing
         for row in canvas:
-            print("".join(row))
+            sys.stdout.write("".join(row) + "\n")
+        sys.stdout.flush()
