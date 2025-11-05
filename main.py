@@ -8,17 +8,17 @@ from engine.universe import Universe
 from engine.renderer import Renderer
 from engine.camera import Camera
 
-DELTA_TIME = 1 # Simulation delta (how far things move each frame)
-SLEEP = 0.02  # FPS Control (how often screen updates)
+DELTA_TIME = 0.1 # Simulation delta (how far things move each frame)
+SLEEP = 0.05  # FPS Control (how often screen updates)
 PAN_STEP = 2.0
-ZOOM_IN_FACTOR = 0.9
-ZOOM_OUT_FACTOR = 1.1
-MAX_ZOOM = 2.0
+ZOOM_IN_FACTOR = 1.1
+ZOOM_OUT_FACTOR = 0.9
+MAX_ZOOM = 5.0
 MIN_ZOOM = 0.1
 
 def main():
     # Create simple universe
-    sun = Body.star(name="Sun", pos=(15, 15), velocity=(0, 0), mass=1000, radius=1)
+    sun = Body.star(name="Sun", pos=(5, 5), velocity=(0, 0), mass=1000, radius=1)
     planet = Body.planet(name="PlanetA", pos=(0, 0), velocity=(0, 0), mass=1, radius=1)
     system = SolarSystem(name="SystemA", center=sun, bodies=[planet])
     galaxy = Galaxy(name="Milky-ish", pos=(0, 0), systems=[system])
