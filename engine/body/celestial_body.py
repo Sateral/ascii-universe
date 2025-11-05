@@ -12,7 +12,7 @@ class BodyType(Enum):
 
 
 @dataclass
-class Body:
+class CelestialBody:
     """A celestial body with optional physical metadata."""
 
     name: str
@@ -48,7 +48,7 @@ class Body:
         temperature: float = 5778.0,
         composition: str = "Hydrogen/Helium",
         description: Optional[str] = None,
-    ) -> "Body":
+    ) -> "CelestialBody":
         return cls(
             name=name,
             pos=pos,
@@ -76,7 +76,7 @@ class Body:
         albedo: float = 0.3,
         composition: str = "Silicate",
         description: Optional[str] = None,
-    ) -> "Body":
+    ) -> "CelestialBody":
         return cls(
             name=name,
             pos=pos,
@@ -102,7 +102,7 @@ class Body:
         symbol: str = "·",
         composition: str = "Carbonaceous",
         description: Optional[str] = None,
-    ) -> "Body":
+    ) -> "CelestialBody":
         return cls(
             name=name,
             pos=pos,
@@ -126,7 +126,7 @@ class Body:
         velocity: Tuple[float, float] = (0.0, 0.0),
         symbol: str = "●",
         description: Optional[str] = None,
-    ) -> "Body":
+    ) -> "CelestialBody":
         return cls(
             name=name,
             pos=pos,

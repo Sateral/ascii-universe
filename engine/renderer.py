@@ -5,7 +5,7 @@ from math import sqrt
 
 from engine.camera import Camera
 from engine.universe import Universe
-from engine.body import BodyType
+from engine.body.celestial_body import BodyType
 
 
 class Renderer:

@@ -1,7 +1,7 @@
 import time
 import msvcrt
 
-from engine.body import Body
+from engine.body.celestial_body import CelestialBody
 from engine.system import SolarSystem
 from engine.galaxy import Galaxy
 from engine.universe import Universe
@@ -18,8 +18,8 @@ MIN_ZOOM = 0.1
 
 def main():
     # Create simple universe
-    sun = Body.star(name="Sun", pos=(5, 5), velocity=(0, 0), mass=1000, radius=1)
-    planet = Body.planet(name="PlanetA", pos=(0, 0), velocity=(0, 0), mass=1, radius=1)
+    sun = CelestialBody.star(name="Sun", pos=(5, 5), velocity=(0, 0), mass=1000, radius=1)
+    planet = CelestialBody.planet(name="PlanetA", pos=(0, 0), velocity=(0, 0), mass=1, radius=1)
     system = SolarSystem(name="SystemA", center=sun, bodies=[planet])
     galaxy = Galaxy(name="Milky-ish", pos=(0, 0), systems=[system])
     universe = Universe(galaxies=[galaxy])
