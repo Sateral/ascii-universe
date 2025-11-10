@@ -1,31 +1,32 @@
 import time
 import msvcrt
 
-from engine.body.celestial_body import CelestialBody
+from engine.body import Star, Planet
 from engine.system import SolarSystem
 from engine.galaxy import Galaxy
 from engine.universe import Universe
-from engine.renderer import Renderer
+from engine.renderer.ascii_renderer import AsciiRenderer
 from engine.camera import Camera
+from engine.body.planet import PlanetType
 
 DELTA_TIME = 0.1 # Simulation delta (how far things move each frame)
 SLEEP = 0.05  # FPS Control (how often screen updates)
 PAN_STEP = 2.0
 ZOOM_IN_FACTOR = 1.1
 ZOOM_OUT_FACTOR = 0.9
-MAX_ZOOM = 5.0
+MAX_ZOOM = 10.0
 MIN_ZOOM = 0.1
 
 def main():
     # Create simple universe
-    sun = CelestialBody.star(name="Sun", pos=(5, 5), velocity=(0, 0), mass=1000, radius=1)
-    planet = CelestialBody.planet(name="PlanetA", pos=(0, 0), velocity=(0, 0), mass=1, radius=1)
+    sun = Star(name="Sun", pos=(5, 5), velocity=(0, 0), mass=1000, radius=5)
+    planet = Planet(name="PlanetA", pos=(0, 0), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.GAS_GIANT)
     system = SolarSystem(name="SystemA", center=sun, bodies=[planet])
     galaxy = Galaxy(name="Milky-ish", pos=(0, 0), systems=[system])
     universe = Universe(galaxies=[galaxy])
 
-    camera = Camera(center=sun.pos, zoom=0.5, max_zoom=MAX_ZOOM, min_zoom=MIN_ZOOM)
-    renderer = Renderer(width=100, height=40, camera=camera)
+    camera = Camera(center=planet.pos, zoom=0.5, max_zoom=MAX_ZOOM, min_zoom=MIN_ZOOM)
+    renderer = AsciiRenderer(width=100, height=40, camera=camera)
 
     t = 0.0
     while True:
@@ -48,8 +49,7 @@ def main():
 
         camera.update(DELTA_TIME)
         system.update(DELTA_TIME)
-        renderer.render(universe)
-        print(f"Time: {t:.2f}s")
+        renderer.render(universe, status=f"Time: {t:.2f}s")
         time.sleep(SLEEP)
         t += DELTA_TIME
 

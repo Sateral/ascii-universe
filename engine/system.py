@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from .body.celestial_body import CelestialBody
+from .body.base import CelestialBody
 from utils.math_utils import rotate_around
 
 @dataclass
