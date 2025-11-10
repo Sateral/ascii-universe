@@ -19,13 +19,16 @@ MIN_ZOOM = 0.1
 
 def main():
     # Create simple universe
-    sun = Star(name="Sun", pos=(5, 5), velocity=(0, 0), mass=1000, radius=5)
-    planet = Planet(name="PlanetA", pos=(0, 0), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.GAS_GIANT)
-    system = SolarSystem(name="SystemA", center=sun, bodies=[planet])
+    sun = Star(name="Sun", pos=(5, 0), velocity=(0, 0), mass=1000, radius=5)
+    planet1 = Planet(name="PlanetA", pos=(0, 10), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.GAS_GIANT)
+    planet2 = Planet(name="PlanetB", pos=(20, 0), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.ICE_GIANT)
+    planet3 = Planet(name="PlanetC", pos=(0, -10), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.TERRESTRIAL)
+    planet4 = Planet(name="PlanetD", pos=(-10, 0), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.LAVA_GIANT)
+    system = SolarSystem(name="SystemA", center=sun, bodies=[planet1, planet2, planet3, planet4])
     galaxy = Galaxy(name="Milky-ish", pos=(0, 0), systems=[system])
     universe = Universe(galaxies=[galaxy])
 
-    camera = Camera(center=planet.pos, zoom=0.5, max_zoom=MAX_ZOOM, min_zoom=MIN_ZOOM)
+    camera = Camera(center=sun.pos, zoom=0.5, max_zoom=MAX_ZOOM, min_zoom=MIN_ZOOM)
     renderer = AsciiRenderer(width=100, height=40, camera=camera)
 
     t = 0.0
