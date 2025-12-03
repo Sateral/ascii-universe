@@ -1,0 +1,33 @@
+Testing Universe Generation...
+Galaxy generated: Galaxy-0 with 5 systems
+System generated: Galaxy-0-Sys-0 with center Galaxy-0-Sys-0-Star
+Planet generated: Galaxy-0-Sys-0-P0 with orbit Orbit(semi_major_axis=40.67184050893631, eccentricity=0.06675927892579106, inclination=0, argument_of_periapsis=1.5404067743975436, mean_anomaly_at_epoch=0.010496397703829314, period=259.3825399899856)
+
+Testing Physics Update...
+Start Pos: (0, 0)
+End Pos: (-887.007924433748, -789.0330468643182)
+Physics update successful (position changed)
+
+Testing Renderer...
+[H                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                       · ·                                      
+                                        *··                                     
+                                       ···                                      
+                                        ·                                       
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+Test Status                                                                     Render successful
+
+All tests passed!

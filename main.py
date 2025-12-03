@@ -1,37 +1,34 @@
 import time
 import msvcrt
 
-from engine.body import Star, Planet
-from engine.system import SolarSystem
-from engine.galaxy import Galaxy
-from engine.universe import Universe
+from engine.generator import UniverseGenerator
 from engine.renderer.ascii_renderer import AsciiRenderer
 from engine.camera import Camera
-from engine.body.planet import PlanetType
 
 DELTA_TIME = 0.1 # Simulation delta (how far things move each frame)
 SLEEP = 0.05  # FPS Control (how often screen updates)
 PAN_STEP = 2.0
 ZOOM_IN_FACTOR = 1.1
 ZOOM_OUT_FACTOR = 0.9
-MAX_ZOOM = 10.0
-MIN_ZOOM = 0.1
+MAX_ZOOM = 100.0 # Increased max zoom
+MIN_ZOOM = 0.01  # Decreased min zoom
 
 def main():
-    # Create simple universe
-    sun = Star(name="Sun", pos=(5, 0), velocity=(0, 0), mass=1000, radius=5)
-    planet1 = Planet(name="PlanetA", pos=(0, 10), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.GAS_GIANT)
-    planet2 = Planet(name="PlanetB", pos=(20, 0), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.ICE_GIANT)
-    planet3 = Planet(name="PlanetC", pos=(0, -10), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.TERRESTRIAL)
-    planet4 = Planet(name="PlanetD", pos=(-10, 0), velocity=(0, 0), mass=1, radius=1, planet_type=PlanetType.LAVA_GIANT)
-    system = SolarSystem(name="SystemA", center=sun, bodies=[planet1, planet2, planet3, planet4])
-    galaxy = Galaxy(name="Milky-ish", pos=(0, 0), systems=[system])
-    universe = Universe(galaxies=[galaxy])
+    # Generate universe
+    generator = UniverseGenerator(seed=1)
+    universe = generator.generate_universe(num_galaxies=2)
+    
+    # Focus on the first system of the first galaxy
+    start_system = universe.galaxies[0].systems[0]
+    start_pos = start_system.center.pos
 
-    camera = Camera(center=sun.pos, zoom=0.5, max_zoom=MAX_ZOOM, min_zoom=MIN_ZOOM)
+    camera = Camera(center=start_pos, zoom=0.5, max_zoom=MAX_ZOOM, min_zoom=MIN_ZOOM)
     renderer = AsciiRenderer(width=100, height=40, camera=camera)
 
     t = 0.0
+    time_scale = 1.0
+    paused = False
+
     while True:
         while msvcrt.kbhit():
             key = msvcrt.getch()
@@ -49,12 +46,25 @@ def main():
                 camera.zoom_by(ZOOM_IN_FACTOR)
             elif key == b"-":
                 camera.zoom_by(ZOOM_OUT_FACTOR)
+            elif key == b" ":
+                paused = not paused
+            elif key == b"]":
+                time_scale *= 2.0
+            elif key == b"[":
+                time_scale /= 2.0
+            elif key == b"q":
+                return
+
+        if not paused:
+            # Update all galaxies/systems
+            for galaxy in universe.galaxies:
+                for system in galaxy.systems:
+                    system.update(t)
+            t += DELTA_TIME * time_scale
 
         camera.update(DELTA_TIME)
-        system.update(DELTA_TIME)
-        renderer.render(universe, status=f"Time: {t:.2f}s")
+        renderer.render(universe, status=f"Time: {t:.2f}s | Scale: {time_scale:.1f}x | Pos: {camera.center}")
         time.sleep(SLEEP)
-        t += DELTA_TIME
 
 
 if __name__ == "__main__":

@@ -37,32 +37,20 @@ class AsciiRenderer:
         """
         Renders the universe to the terminal
         """
+        # Create canvas (list of lists of single characters)
         canvas = [[" " for _ in range(self.width)] for _ in range(self.height)]
 
         # Draw galaxies
         for galaxy in universe.galaxies:
-            # Center of galaxy
+            # Check if galaxy is roughly in view (simple culling)
             gx, gy = self.to_screen(*galaxy.pos)
-
-            # If galaxy is in view
             if 0 <= gx < self.width and 0 <= gy < self.height:
                 canvas[gy][gx] = "x"
 
             # Draw systems
             for system in galaxy.systems:
-                # Center of system
-                sx, sy = self.to_screen(*system.center.pos)
-
-                if 0 <= sx < self.width and 0 <= sy < self.height:
-                    self._draw_body(system.center, canvas, sx, sy)
-
-                # Draw bodies
-                for body in system.bodies:
-                    bx, by = self.to_screen(*body.pos)
-
-                    # If body is in view
-                    if 0 <= bx < self.width and 0 <= by < self.height:
-                        self._draw_body(body, canvas, bx, by)
+                # Recursively draw the system hierarchy starting from the center star
+                self._draw_hierarchy(system.center, canvas)
         
         # Render status on the last line if provided
         if status is not None:
@@ -73,6 +61,20 @@ class AsciiRenderer:
 
         # Render to screen
         self._print(canvas)
+
+    def _draw_hierarchy(self, body: CelestialBody, canvas):
+        """Recursively draw a body and its children."""
+        bx, by = self.to_screen(*body.pos)
+        
+        # Culling: Only draw if within bounds
+        if 0 <= bx < self.width and 0 <= by < self.height:
+            self._draw_body(body, canvas, bx, by)
+            
+        # Draw children
+        for child in body.children:
+            self._draw_hierarchy(child, canvas)
+        
+
         
 
     def _draw_body(self, body: CelestialBody, canvas, sx, sy):

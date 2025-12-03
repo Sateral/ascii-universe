@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import List
 
 from .body.base import CelestialBody
-from utils.math_utils import rotate_around
 
 @dataclass
 class SolarSystem:
@@ -12,7 +11,7 @@ class SolarSystem:
     center: CelestialBody
     bodies: List[CelestialBody] = field(default_factory=list)
 
-    def update(self, dt: float) -> None:
-        """Rotate all orbiting bodies around the center."""
-        for body in self.bodies:
-            body.pos = rotate_around(body.pos, self.center.pos, dt * 0.2)
+    def update(self, t: float) -> None:
+        """Update the system state at time t."""
+        # Update the center body (which recursively updates children)
+        self.center.update(t)
