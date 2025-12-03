@@ -82,12 +82,19 @@ class AsciiRenderer:
         if renderer_cls:
             renderer_cls().draw(body, canvas, sx, sy, self.width, self.height, self.camera)
 
+    def hide_cursor(self):
+        sys.stdout.write("\033[?25l")
+        sys.stdout.flush()
+
+    def show_cursor(self):
+        sys.stdout.write("\033[?25h")
+        sys.stdout.flush()
+
     def _print(self, canvas):
-        sys.stdout.write("\033[H")       # move cursor home without clearing
-        for y, row in enumerate(canvas):
-            line = "".join(row)
-            if y < self.height - 1:
-                sys.stdout.write(line + "\n")
-            else:
-                sys.stdout.write(line)
+        # Build the entire frame as a single string
+        lines = ["".join(row) for row in canvas]
+        # Move to home, print all lines joined by newline
+        # Note: We avoid printing a newline at the very end to prevent scrolling
+        frame = "\033[H" + "\n".join(lines)
+        sys.stdout.write(frame)
         sys.stdout.flush()

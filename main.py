@@ -29,42 +29,46 @@ def main():
     time_scale = 1.0
     paused = False
 
-    while True:
-        while msvcrt.kbhit():
-            key = msvcrt.getch()
-            if key == b"\xe0":
+    renderer.hide_cursor()
+    try:
+        while True:
+            while msvcrt.kbhit():
                 key = msvcrt.getch()
-                if key == b"H":  # Arrow up
-                    camera.pan(0, -PAN_STEP / camera.zoom)
-                elif key == b"P":  # Arrow down
-                    camera.pan(0, PAN_STEP / camera.zoom)
-                elif key == b"K":  # Arrow left
-                    camera.pan(-PAN_STEP / camera.zoom, 0)
-                elif key == b"M":  # Arrow right
-                    camera.pan(PAN_STEP / camera.zoom, 0)
-            elif key in (b"+", b"="):
-                camera.zoom_by(ZOOM_IN_FACTOR)
-            elif key == b"-":
-                camera.zoom_by(ZOOM_OUT_FACTOR)
-            elif key == b" ":
-                paused = not paused
-            elif key == b"]":
-                time_scale *= 2.0
-            elif key == b"[":
-                time_scale /= 2.0
-            elif key == b"q":
-                return
+                if key == b"\xe0":
+                    key = msvcrt.getch()
+                    if key == b"H":  # Arrow up
+                        camera.pan(0, -PAN_STEP / camera.zoom)
+                    elif key == b"P":  # Arrow down
+                        camera.pan(0, PAN_STEP / camera.zoom)
+                    elif key == b"K":  # Arrow left
+                        camera.pan(-PAN_STEP / camera.zoom, 0)
+                    elif key == b"M":  # Arrow right
+                        camera.pan(PAN_STEP / camera.zoom, 0)
+                elif key in (b"+", b"="):
+                    camera.zoom_by(ZOOM_IN_FACTOR)
+                elif key == b"-":
+                    camera.zoom_by(ZOOM_OUT_FACTOR)
+                elif key == b" ":
+                    paused = not paused
+                elif key == b"]":
+                    time_scale *= 2.0
+                elif key == b"[":
+                    time_scale /= 2.0
+                elif key == b"q":
+                    return
 
-        if not paused:
-            # Update all galaxies/systems
-            for galaxy in universe.galaxies:
-                for system in galaxy.systems:
-                    system.update(t)
-            t += DELTA_TIME * time_scale
+            if not paused:
+                # Update all galaxies/systems
+                for galaxy in universe.galaxies:
+                    for system in galaxy.systems:
+                        system.update(t)
+                t += DELTA_TIME * time_scale
 
-        camera.update(DELTA_TIME)
-        renderer.render(universe, status=f"Time: {t:.2f}s | Scale: {time_scale:.1f}x | Pos: {camera.center}")
-        time.sleep(SLEEP)
+            camera.update(DELTA_TIME)
+            renderer.render(universe, status=f"Time: {t:.2f}s | Scale: {time_scale:.1f}x | Pos: {camera.center}")
+            time.sleep(SLEEP)
+    finally:
+        renderer.show_cursor()
 
 
 if __name__ == "__main__":
